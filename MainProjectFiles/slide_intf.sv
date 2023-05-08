@@ -54,7 +54,7 @@ strt_cnv = 1'b0;
       strt_cnv = 1'b1;
       nxt_state = CNV_CMPLT;
     end
-    // Waits for the conversion to be complete to increment bit ocunter
+    // Waits for the conversion to be complete to increment bit counter
     CNV_CMPLT : begin
       if (cnv_cmplt) begin
 	EN = 1'b1;
@@ -67,7 +67,7 @@ end
 
 ///////////////////////////////////////////////////////////////////////////
 // Flops to control slide potentiometers. Each one is enabled separately //
-// based on the enable signal from SM and their respective channel.	 //
+// based on the enable signal from the SM and their respective channel.	 //
 ///////////////////////////////////////////////////////////////////////////
 always_ff @(posedge clk, negedge rst_n) begin
   if (~rst_n)
