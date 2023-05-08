@@ -1,0 +1,2 @@
+# Includes a testbench using tasks and functions as well as a shorter test used in post-synth simulation to tet the PDM, next/previous song buttons,
+# and the RX and TX signals from the RN52 Bluetooth module
