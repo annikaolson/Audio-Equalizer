@@ -68,7 +68,7 @@ assign band_scale_sum_lft_ff = (scaled_lp_lft + scaled_b1_lft + scaled_b2_lft + 
 // Multiplication of the band scale sum and the signed volume POT value.      //
 // Then assign the left engine output to be the upper 16 bits of that result. //
 ////////////////////////////////////////////////////////////////////////////////
-assign aud_out_mult_lft = (band_scale_sum_lft * {1'b0, VOL_POT});
+assign aud_out_mult_lft = (band_scale_sum_lft * $signed{1'b0, VOL_POT});
 assign aud_out_lft = aud_out_mult_lft [27:12];
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -89,7 +89,7 @@ assign band_scale_sum_rght_ff = (scaled_lp_rght + scaled_b1_rght + scaled_b2_rgh
 // Multiplication of the band scale sum and the signed volume POT value.      //
 // Then assign the left engine output to be the upper 16 bits of that result. //
 ////////////////////////////////////////////////////////////////////////////////
-assign aud_out_mult_rght = (band_scale_sum_rght * {1'b0, VOL_POT});
+assign aud_out_mult_rght = (band_scale_sum_rght * $signed{1'b0, VOL_POT});
 assign aud_out_rght = aud_out_mult_rght [27:12];
 
 /////////////////////////////////////////
