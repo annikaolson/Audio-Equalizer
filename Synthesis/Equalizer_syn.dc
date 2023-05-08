@@ -1,0 +1,129 @@
+#################################
+## Synthesis Script: Equalizer ##
+#################################
+
+###################################
+# Read in the given verilog files #
+###################################
+read_file -format verilog cmdROM.v
+read_file -format verilog dualPort1024x16.v
+read_file -format verilog dualPort1536x16.v
+read_file -format verilog resp_ROM.v
+read_file -format verilog ROM_B1.v
+read_file -format verilog ROM_B2.v
+read_file -format verilog ROM_B3.v
+read_file -format verilog ROM_HP.v
+read_file -format verilog ROM_LP.v
+read_file -format verilog tone_ROM_lft.v
+read_file -format verilog tone_ROM_rght.v
+
+read_file -format sverilog A2D_with_Pots.sv 
+read_file -format sverilog ADC128S.sv 
+read_file -format sverilog Equalizer.sv 
+read_file -format sverilog I2S_Mnrch.sv 
+read_file -format sverilog RN52.sv 
+read_file -format sverilog ROM.sv 
+read_file -format sverilog SPI_ADC128S.sv 
+read_file -format sverilog spkr_drv.sv 
+read_file -format sverilog UART.sv
+
+#############################
+# Read in our verilog files #
+#############################
+read_file -format sverilog A2D_intf.sv 
+read_file -format sverilog band_scale.sv 
+read_file -format sverilog BT_intf.sv 
+read_file -format sverilog EQ_Engine.sv 
+read_file -format sverilog Equalizer.sv 
+read_file -format sverilog FIR_B1.sv 
+read_file -format sverilog FIR_B2.sv 
+read_file -format sverilog FIR_B3.sv 
+read_file -format sverilog FIR_HP.sv 
+read_file -format sverilog FIR_LP.sv 
+read_file -format sverilog high_freq_queue.sv 
+read_file -format sverilog I2S_Serf.sv 
+read_file -format sverilog low_freq_queue.sv 
+read_file -format sverilog PB_release.sv 
+read_file -format sverilog PDM.sv 
+read_file -format sverilog rst_synch.sv 
+read_file -format sverilog slide_intf.sv 
+read_file -format sverilog snd_cmd.sv 
+read_file -format sverilog SPI_mnrch.sv
+
+###################################
+# Set Current Design to top level #
+###################################
+set current_design Equalizer
+
+##############################################
+## Defines a clock period of 3.003003003 ns ##
+##############################################
+create_clock -name "clk" -period 3.003003003 -waveform {0 1} {clk}
+set_dont_touch_network [find port clk]
+
+######################################
+# Don't touch the internal net rst_n #
+######################################
+set_dont_touch_network [get_net reset/rst/n]
+
+################################################
+## Tells synopsis not to touch these memories ##
+################################################
+set_dont_touch [find design dualPort1024x16]
+set_dont_touch [find design dualPort1536x16]
+set_dont_touch [find design ROM_LP]
+set_dont_touch [find design ROM_B1]
+set_dont_touch [find design ROM_B2]
+set_dont_touch [find design ROM_B3]
+set_dont_touch [find design ROM_HP]
+set_dont_touch [find design cmdROM]
+
+############################################################################
+## Creates a variable for all inputs except clock and sets an input delay ##
+############################################################################
+set prim_inputs [remove_from_collection [all_inputs] [find port clk]]
+set_input_delay -clock clk 0.75 $prim_inputs
+
+###################################
+## Sets drive strength on inputs ##
+###################################
+set_driving_cell -lib_cell NAND2X1_LVT -library saed32lvt_tt0p85v25c $prim_inputs
+
+################################
+## Defines output constraints ##
+################################
+set_output_delay -clock clk 0.75 [all_outputs]
+set_load 50 [all_outputs]
+
+#######################################
+## Sets wire load to transition time ##
+#######################################
+set_max_transition 0.15 [current_design]
+set_wire_load_model -name 16000 -library saed32lvt_tt0p85v25c
+
+####################################################
+## Make sure design has no hierarchy and compiles ##
+####################################################
+compile -map_effort medium
+
+
+set_clock_uncertainty .125 clk
+set_fix_hold clk
+
+ungroup -all -flatten
+compile -map_effort medium
+
+#############################
+## Timing and Area Reports ##
+#############################
+report_timing -delay min
+report_timing -delay max
+report_area 
+
+####################
+## Writes reports ##
+####################
+write -format verilog Equalizer -output Equalizer.vg
+report_area > Equalizer_area.txt
+
+
