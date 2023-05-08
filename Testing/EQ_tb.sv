@@ -1,3 +1,6 @@
+//////////////////////////////////
+// TB for post-synth simulation //
+//////////////////////////////////
 module EQ_tb();
 // inputs //
 logic clk,RST_n, rst_n;
@@ -52,14 +55,19 @@ Flt_n = 1'b1;
 @(negedge clk) RST_n = 1'b1; //deassert reset
 next_n = 1'b1;
 prev_n = 1'b1;
+// Initializes band signals
 LP = 12'h800;
 B1 = 12'h000;
 B2 = 12'h000;
 B3 = 12'h000;
 HP = 12'h000;
 VOL = 12'h112;
-repeat (2500000) @(posedge clk); // runs for 2,500,000 clks
+	repeat (250000) @(posedge clk); // runs for 250,000 clks
 LP = 12'h000;
+/////////////////////////////////////////////////////////
+// tests next and previous button -> visually look for //
+// song change and change in TX/RX in waveforms	       //
+/////////////////////////////////////////////////////////
 repeat (25000) @(posedge clk); // runs for 2,500,000 clk
 	next_n = 1'b0; // assert next_n signal
 @(posedge clk);
